@@ -3,15 +3,14 @@ import path from 'path';
 
 const ALLOWED_EXTENSIONS = ['js', 'jsx', 'tsx', 'ts'];
 
-export async function generateComponent(componentName, options = {}) {
+export async function generateHook(hookName, options = {}) {
     let extension = 'js';
     if (options.tsx) extension = 'tsx';
     else if (options.jsx) extension = 'jsx';
     else if (options.ts) extension = 'ts';
 
-    const folderPath = path.join(process.cwd(),'components', componentName);
-    const filePath = path.join(folderPath, `${componentName}.${extension}`);
-    const cssPath = path.join(folderPath, `${componentName}.css`)
+    const folderPath = path.join(process.cwd(),'hooks');
+    const filePath = path.join(folderPath, `${hookName}.${extension}`);
 
     try {
         await fs.mkdir(folderPath, { recursive: true });
@@ -19,7 +18,7 @@ export async function generateComponent(componentName, options = {}) {
         // Remove any existing file for this component that has a different extension
         for (const ext of ALLOWED_EXTENSIONS) {
             if (ext === extension) continue;
-            const oldFilePath = path.join(folderPath, `${componentName}.${ext}`);
+            const oldFilePath = path.join(folderPath, `${hookName}.${ext}`);
             try {
                 await fs.unlink(oldFilePath);
                 console.log(`Removed ${oldFilePath}`);
@@ -28,11 +27,10 @@ export async function generateComponent(componentName, options = {}) {
             }
         }
 
-        const content = `export default function ${componentName}() {\n  // ...\n}\n`;
+        const content = `export default function ${hookName}() {\n  // ...\n}\n`;
         await fs.writeFile(filePath, content);
-        await fs.writeFile(cssPath, '');
 
-        console.log(`successfully created \n 🟢 ${componentName}.${extension} \n 🟣 ${componentName}.css`);
+        console.log(`successfully created \n 🟢 ${hookName}.${extension} \n`);
     } catch (err) {
         console.log('Error: ', err);
     }
