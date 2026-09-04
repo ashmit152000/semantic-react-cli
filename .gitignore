@@ -1,0 +1,6 @@
+node_modules/
+*.log
+.DS_Store
+
+# local scaffolding output produced while testing the CLI
+/components/
