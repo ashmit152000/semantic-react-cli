@@ -20,6 +20,8 @@
   "files": [
     "main.js",
     "component.js",
+    "helper.js",
+    "hook.js",
     "README.md",
     "LICENSE"
   ],
