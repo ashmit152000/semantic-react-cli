@@ -43,3 +43,12 @@ test('switching extension removes the stale file', async () => {
     await assert.rejects(fs.access(path.join(base, 'useFetch.jsx')));
   });
 });
+
+test('writes into a custom destination path when one is given', async () => {
+  await inTempDir(async (dir) => {
+    await generateHook('useToggle', { tsx: true }, 'src/hooks');
+    const base = path.join(dir, 'src', 'hooks');
+    const tsx = await fs.readFile(path.join(base, 'useToggle.tsx'), 'utf8');
+    assert.match(tsx, /export default function useToggle\(\)/);
+  });
+});

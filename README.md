@@ -34,6 +34,13 @@ Or a hook file:
 semantic-react generate hook <name> [--js | --jsx | --ts | --tsx]
 ```
 
+To configure where those files land, create a settings file (see
+[Custom output paths](#custom-output-paths)):
+
+```bash
+semantic-react init
+```
+
 `generate` is aliased to `g`, `component` to `c`, `helper` to `h`, and `hook`
 to `k`, so this also works:
 
@@ -86,6 +93,57 @@ export default function formatDate() {
 
 If a file with the same name already exists with a different extension, it is
 removed so each component, helper, or hook has a single source file.
+
+### Custom output paths
+
+By default, scaffolds are written to `components/`, `helpers/`, and `hooks/`
+in your project root. To send them somewhere else, add a
+`semantic-react.settings.json` file to your project root.
+
+Run `init` to drop one in, pre-filled with the default paths:
+
+```bash
+semantic-react init
+```
+
+```json
+{
+  "helpers": "helpers",
+  "hooks": "hooks",
+  "components": "components"
+}
+```
+
+`init` will not clobber an existing file; pass `--force` to overwrite it.
+Then edit the paths to taste, for example:
+
+```json
+{
+  "components": "src/components",
+  "helpers": "src/lib/helpers",
+  "hooks": "src/hooks"
+}
+```
+
+With that file in place, `semantic-react g c Button --jsx` creates:
+
+```
+src/components/
+  Button/
+    Button.jsx
+    Button.css
+```
+
+Notes:
+
+- Every key is optional. Any key you leave out falls back to its default
+  (`components`, `helpers`, `hooks`).
+- If `semantic-react.settings.json` is missing entirely, the defaults are used,
+  so existing projects need no changes.
+- Paths are resolved relative to the directory you run the command from
+  (your project root) and nested paths like `src/components` are created
+  automatically.
+- Unknown keys in the file are ignored.
 
 ### Options
 

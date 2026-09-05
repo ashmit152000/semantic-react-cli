@@ -3,13 +3,13 @@ import path from 'path';
 
 const ALLOWED_EXTENSIONS = ['js', 'jsx', 'tsx', 'ts'];
 
-export async function generateComponent(componentName, options = {}) {
+export async function generateComponent(componentName, options = {}, destinationPath = 'components') {
     let extension = 'js';
     if (options.tsx) extension = 'tsx';
     else if (options.jsx) extension = 'jsx';
     else if (options.ts) extension = 'ts';
 
-    const folderPath = path.join(process.cwd(),'components', componentName);
+    const folderPath = path.join(process.cwd(), destinationPath, componentName);
     const filePath = path.join(folderPath, `${componentName}.${extension}`);
     const cssPath = path.join(folderPath, `${componentName}.css`)
 

@@ -36,3 +36,13 @@ test('switching extension removes the stale file', async () => {
     await assert.rejects(fs.access(path.join(base, 'Card.jsx')));
   });
 });
+
+test('writes into a custom destination path when one is given', async () => {
+  await inTempDir(async (dir) => {
+    await generateComponent('Modal', { jsx: true }, 'src/ui/components');
+    const base = path.join(dir, 'src', 'ui', 'components', 'Modal');
+    const jsx = await fs.readFile(path.join(base, 'Modal.jsx'), 'utf8');
+    assert.match(jsx, /export default function Modal\(\)/);
+    await fs.access(path.join(base, 'Modal.css'));
+  });
+});
