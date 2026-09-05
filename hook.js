@@ -3,13 +3,13 @@ import path from 'path';
 
 const ALLOWED_EXTENSIONS = ['js', 'jsx', 'tsx', 'ts'];
 
-export async function generateHook(hookName, options = {}) {
+export async function generateHook(hookName, options = {}, destinationPath = 'hooks') {
     let extension = 'js';
     if (options.tsx) extension = 'tsx';
     else if (options.jsx) extension = 'jsx';
     else if (options.ts) extension = 'ts';
 
-    const folderPath = path.join(process.cwd(),'hooks');
+    const folderPath = path.join(process.cwd(), destinationPath);
     const filePath = path.join(folderPath, `${hookName}.${extension}`);
 
     try {

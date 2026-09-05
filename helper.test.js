@@ -43,3 +43,12 @@ test('switching extension removes the stale file', async () => {
     await assert.rejects(fs.access(path.join(base, 'parseQuery.jsx')));
   });
 });
+
+test('writes into a custom destination path when one is given', async () => {
+  await inTempDir(async (dir) => {
+    await generateHelper('formatDate', { ts: true }, 'src/lib/utils');
+    const base = path.join(dir, 'src', 'lib', 'utils');
+    const ts = await fs.readFile(path.join(base, 'formatDate.ts'), 'utf8');
+    assert.match(ts, /export default function formatDate\(\)/);
+  });
+});

@@ -3,13 +3,13 @@ import path from 'path';
 
 const ALLOWED_EXTENSIONS = ['js', 'jsx', 'tsx', 'ts'];
 
-export async function generateHelper(helperName, options = {}) {
+export async function generateHelper(helperName, options = {}, destinationPath = 'helpers') {
     let extension = 'js';
     if (options.tsx) extension = 'tsx';
     else if (options.jsx) extension = 'jsx';
     else if (options.ts) extension = 'ts';
 
-    const folderPath = path.join(process.cwd(),'helpers');
+    const folderPath = path.join(process.cwd(), destinationPath);
     const filePath = path.join(folderPath, `${helperName}.${extension}`);
 
     try {
