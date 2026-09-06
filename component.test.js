@@ -27,13 +27,23 @@ test('creates a component file and a css file', async () => {
   });
 });
 
-test('switching extension removes the stale file', async () => {
+test('switching extension removes the stale file when confirmed', async () => {
   await inTempDir(async (dir) => {
     await generateComponent('Card', { jsx: true });
-    await generateComponent('Card', { tsx: true });
+    await generateComponent('Card', { tsx: true }, undefined, async () => true);
     const base = path.join(dir, 'components', 'Card');
     await fs.access(path.join(base, 'Card.tsx'));
     await assert.rejects(fs.access(path.join(base, 'Card.jsx')));
+  });
+});
+
+test('switching extension keeps the stale file when not confirmed', async () => {
+  await inTempDir(async (dir) => {
+    await generateComponent('Panel', { jsx: true });
+    await generateComponent('Panel', { tsx: true }, undefined, async () => false);
+    const base = path.join(dir, 'components', 'Panel');
+    await fs.access(path.join(base, 'Panel.tsx'));
+    await fs.access(path.join(base, 'Panel.jsx'));
   });
 });
 

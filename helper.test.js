@@ -34,13 +34,23 @@ test('defaults to a .js extension when no option is passed', async () => {
   });
 });
 
-test('switching extension removes the stale file', async () => {
+test('switching extension removes the stale file when confirmed', async () => {
   await inTempDir(async (dir) => {
     await generateHelper('parseQuery', { jsx: true });
-    await generateHelper('parseQuery', { tsx: true });
+    await generateHelper('parseQuery', { tsx: true }, undefined, async () => true);
     const base = path.join(dir, 'helpers');
     await fs.access(path.join(base, 'parseQuery.tsx'));
     await assert.rejects(fs.access(path.join(base, 'parseQuery.jsx')));
+  });
+});
+
+test('switching extension keeps the stale file when not confirmed', async () => {
+  await inTempDir(async (dir) => {
+    await generateHelper('slugify', { jsx: true });
+    await generateHelper('slugify', { tsx: true }, undefined, async () => false);
+    const base = path.join(dir, 'helpers');
+    await fs.access(path.join(base, 'slugify.tsx'));
+    await fs.access(path.join(base, 'slugify.jsx'));
   });
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "semantic-react-cli",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A small CLI that scaffolds React components with a colocated CSS file.",
   "keywords": [
     "react",
