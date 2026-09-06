@@ -34,13 +34,23 @@ test('defaults to a .js extension when no option is passed', async () => {
   });
 });
 
-test('switching extension removes the stale file', async () => {
+test('switching extension removes the stale file when confirmed', async () => {
   await inTempDir(async (dir) => {
     await generateHook('useFetch', { jsx: true });
-    await generateHook('useFetch', { tsx: true });
+    await generateHook('useFetch', { tsx: true }, undefined, async () => true);
     const base = path.join(dir, 'hooks');
     await fs.access(path.join(base, 'useFetch.tsx'));
     await assert.rejects(fs.access(path.join(base, 'useFetch.jsx')));
+  });
+});
+
+test('switching extension keeps the stale file when not confirmed', async () => {
+  await inTempDir(async (dir) => {
+    await generateHook('useSync', { jsx: true });
+    await generateHook('useSync', { tsx: true }, undefined, async () => false);
+    const base = path.join(dir, 'hooks');
+    await fs.access(path.join(base, 'useSync.tsx'));
+    await fs.access(path.join(base, 'useSync.jsx'));
   });
 });
 
