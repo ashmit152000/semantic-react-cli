@@ -7,6 +7,7 @@ import { generateHelper } from './helper.js';
 import { generateHook } from './hook.js';
 import { generateSettings } from './init.js';
 import readJsonFile from './json-reader.js';
+import { deleteComponent, deleteHelper, deleteHook } from './delete.js';
 const pkg = JSON.parse(
   readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8')
 );
@@ -61,5 +62,47 @@ generate
   .option('--tsx', 'Generate a .tsx file instead of .js')
   .option('--ts', 'Generate a .ts file instead of .js')
   .action((name, options) => generateHook(name, options, paths.hooks));
+
+  // For delete
+  const deleteCommand = program
+  .command('delete')
+  .alias('d')
+  .description('Delete a component, helper, or hook file')
+
+  // delete component
+  deleteCommand
+  .command('component <name>')
+  .alias('c')
+  .option('--jsx', 'Target the .jsx file instead of .js')
+  .option('--tsx', 'Target the .tsx file instead of .js')
+  .option('--ts', 'Target the .ts file instead of .js')
+  .description('Delete a component file')
+  .action(async (name, options) => {
+    await deleteComponent(name, options, paths.components);
+  });
+
+  // delete helper
+  deleteCommand
+  .command('helper <name>')
+  .alias('h')
+  .option('--jsx', 'Target the .jsx file instead of .js')
+  .option('--tsx', 'Target the .tsx file instead of .js')
+  .option('--ts', 'Target the .ts file instead of .js')
+  .description('Delete a helper file')
+  .action(async (name, options) => {
+    await deleteHelper(name, options, paths.helpers);
+  });
+
+  // delete hook
+  deleteCommand
+  .command('hook <name>')
+  .alias('k')
+  .option('--jsx', 'Target the .jsx file instead of .js')
+  .option('--tsx', 'Target the .tsx file instead of .js')
+  .option('--ts', 'Target the .ts file instead of .js')
+  .description('Delete a hook file')
+  .action(async (name, options) => {
+    await deleteHook(name, options, paths.hooks);
+  });
 
 program.parse(process.argv);

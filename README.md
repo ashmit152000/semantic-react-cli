@@ -34,6 +34,14 @@ Or a hook file:
 semantic-react generate hook <name> [--js | --jsx | --ts | --tsx]
 ```
 
+Delete a scaffold you no longer need:
+
+```bash
+semantic-react delete component <name> [--jsx | --ts | --tsx]
+semantic-react delete helper <name> [--jsx | --ts | --tsx]
+semantic-react delete hook <name> [--jsx | --ts | --tsx]
+```
+
 To configure where those files land, create a settings file (see
 [Custom output paths](#custom-output-paths)):
 
@@ -41,13 +49,14 @@ To configure where those files land, create a settings file (see
 semantic-react init
 ```
 
-`generate` is aliased to `g`, `component` to `c`, `helper` to `h`, and `hook`
-to `k`, so this also works:
+`generate` is aliased to `g`, `delete` to `d`, `component` to `c`, `helper` to
+`h`, and `hook` to `k`, so this also works:
 
 ```bash
 semantic-react g c Button --tsx
 semantic-react g h formatDate --ts
 semantic-react g k useToggle --tsx
+semantic-react d c Button --tsx
 ```
 
 ### What it creates
@@ -93,6 +102,36 @@ export default function formatDate() {
 
 If a file with the same name already exists with a different extension, it is
 removed so each component, helper, or hook has a single source file.
+
+### Deleting scaffolds
+
+Remove a scaffold with `delete` (aliased to `d`):
+
+```bash
+semantic-react delete component Button --jsx
+semantic-react delete helper formatDate --ts
+semantic-react delete hook useToggle --tsx
+```
+
+The extension flag selects which file to target, mirroring `generate`. With no
+flag, the `.js` file is targeted:
+
+```bash
+semantic-react delete helper formatDate
+```
+
+- `delete component` removes the component's source file, its colocated
+  `.css` file, and the component folder itself once nothing else is left in it.
+  If you keep other files (tests, stories) in that folder, the folder stays.
+- `delete helper` and `delete hook` remove the single source file.
+- Custom output paths from `semantic-react.settings.json` are respected, so
+  `delete` looks in the same place `generate` writes.
+- If the target file does not exist, the command prints a notice and exits
+  without error.
+
+> **Deletion is permanent.** Files are removed from disk, not moved to the
+> system trash. Commit your work (or rely on your editor's local history) if you
+> want a way back.
 
 ### Custom output paths
 
