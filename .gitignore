@@ -4,3 +4,5 @@ node_modules/
 
 # local scaffolding output produced while testing the CLI
 /components/
+/helpers/
+/hooks/
