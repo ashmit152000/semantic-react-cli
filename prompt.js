@@ -10,3 +10,14 @@ export async function confirm(message) {
         rl.close();
     }
 }
+
+export async function ask(message, defaultValue = '') {
+    const rl = readline.createInterface({ input, output });
+    try {
+        const answer = await rl.question(`${message} `);
+        const trimmed = answer.trim();
+        return trimmed === '' ? defaultValue : trimmed;
+    } finally {
+        rl.close();
+    }
+}
