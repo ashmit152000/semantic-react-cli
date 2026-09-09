@@ -8,6 +8,9 @@ import { generateHook } from './hook.js';
 import { generateSettings } from './init.js';
 import readJsonFile from './json-reader.js';
 import { deleteComponent, deleteHelper, deleteHook } from './delete.js';
+import { listPaths, listDirectory } from './list.js';
+import { renameComponent, renameHelper, renameHook, renameAtPath } from './rename.js';
+import { moveFile } from './move.js';
 const pkg = JSON.parse(
   readFileSync(fileURLToPath(new URL('./package.json', import.meta.url)), 'utf8')
 );
@@ -103,6 +106,80 @@ generate
   .description('Delete a hook file')
   .action(async (name, options) => {
     await deleteHook(name, options, paths.hooks);
+  });
+
+
+  const list = program
+  .command('list [path]')
+  .alias('l')
+  .description('List the files in the components/helpers/hooks paths, or in a given directory')
+  .action((targetPath) => (targetPath ? listDirectory(targetPath) : listPaths(paths)));
+
+  // For rename
+  const renameCommand = program
+  .command('rename')
+  .alias('r')
+  .description('Rename a component, helper, hook, or any file by path');
+
+  // rename component
+  renameCommand
+  .command('component <name> <newName>')
+  .alias('c')
+  .option('--js', 'Rename to a .js file')
+  .option('--jsx', 'Rename to a .jsx file')
+  .option('--tsx', 'Rename to a .tsx file')
+  .option('--ts', 'Rename to a .ts file')
+  .description('Rename a component (keeps the current extension unless one is given)')
+  .action(async (name, newName, options) => {
+    await renameComponent(name, newName, options, paths.components);
+  });
+
+  // rename helper
+  renameCommand
+  .command('helper <name> <newName>')
+  .alias('h')
+  .option('--js', 'Rename to a .js file')
+  .option('--jsx', 'Rename to a .jsx file')
+  .option('--tsx', 'Rename to a .tsx file')
+  .option('--ts', 'Rename to a .ts file')
+  .description('Rename a helper (keeps the current extension unless one is given)')
+  .action(async (name, newName, options) => {
+    await renameHelper(name, newName, options, paths.helpers);
+  });
+
+  // rename hook
+  renameCommand
+  .command('hook <name> <newName>')
+  .alias('k')
+  .option('--js', 'Rename to a .js file')
+  .option('--jsx', 'Rename to a .jsx file')
+  .option('--tsx', 'Rename to a .tsx file')
+  .option('--ts', 'Rename to a .ts file')
+  .description('Rename a hook (keeps the current extension unless one is given)')
+  .action(async (name, newName, options) => {
+    await renameHook(name, newName, options, paths.hooks);
+  });
+
+  // rename by path (e.g. to fix up a file that `move` relocated)
+  renameCommand
+  .command('path <file> <newName>')
+  .alias('p')
+  .option('--js', 'Rename to a .js file')
+  .option('--jsx', 'Rename to a .jsx file')
+  .option('--tsx', 'Rename to a .tsx file')
+  .option('--ts', 'Rename to a .ts file')
+  .description('Rename any file by path, keeping its folder (renames the colocated CSS and, if confirmed, the exported function)')
+  .action(async (file, newName, options) => {
+    await renameAtPath(file, newName, options);
+  });
+
+  // For move
+  program
+  .command('move <source> <destination>')
+  .alias('m')
+  .description('Move a file to another path, creating the destination folder if needed')
+  .action(async (source, destination) => {
+    await moveFile(source, destination);
   });
 
 program.parse(process.argv);
