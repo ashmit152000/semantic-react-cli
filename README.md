@@ -1,6 +1,7 @@
 # semantic-react-cli
 
-A small CLI that scaffolds React components, helpers, and hooks.
+A small CLI that scaffolds React components, helpers, hooks, contexts, Redux
+Toolkit slices, and Next.js pages.
 
 ## Install
 
@@ -32,6 +33,24 @@ Or a hook file:
 
 ```bash
 semantic-react generate hook <name> [--js | --jsx | --ts | --tsx]
+```
+
+A React context, complete with a provider and a consumer hook:
+
+```bash
+semantic-react generate context <Name> [--js | --jsx | --ts | --tsx]
+```
+
+A Redux Toolkit slice, optionally scaffolding named reducer functions:
+
+```bash
+semantic-react generate slice <name> [reducers...] [--js | --jsx | --ts | --tsx]
+```
+
+Or a Next.js page (Pages Router by default, App Router with `--app`):
+
+```bash
+semantic-react generate page <name> [--app] [--js | --jsx | --ts | --tsx]
 ```
 
 Delete a scaffold you no longer need:
@@ -74,13 +93,16 @@ semantic-react init
 ```
 
 `generate` is aliased to `g`, `delete` to `d`, `rename` to `r`, `move` to `m`,
-`list` to `l`, `component` to `c`, `helper` to `h`, and `hook` to `k`, so this
-also works:
+`list` to `l`, `component` to `c`, `helper` to `h`, `hook` to `k`, `context` to
+`x`, `slice` to `s`, and `page` to `p`, so this also works:
 
 ```bash
 semantic-react g c Button --tsx
 semantic-react g h formatDate --ts
 semantic-react g k useToggle --tsx
+semantic-react g x Theme --tsx
+semantic-react g s counter increment decrement --ts
+semantic-react g p about --tsx
 semantic-react d c Button --tsx
 ```
 
@@ -125,8 +147,96 @@ export default function formatDate() {
 }
 ```
 
+Running `semantic-react g x Theme --tsx` creates:
+
+```
+contexts/
+  Theme.tsx
+```
+
+```tsx
+import { createContext, createElement, useContext, useState } from 'react';
+
+const ThemeContext = createContext(undefined);
+
+export function ThemeProvider({ children }) {
+  const [value, setValue] = useState(null);
+
+  return createElement(ThemeContext.Provider, { value: { value, setValue } }, children);
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+}
+```
+
+Running `semantic-react g s counter increment decrement --ts` creates:
+
+```
+slices/
+  counter.ts
+```
+
+```ts
+import { createSlice } from '@reduxjs/toolkit';
+
+const initialState = {};
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState,
+  reducers: {
+    increment(state) {
+      // ...
+    },
+    decrement(state) {
+      // ...
+    },
+  },
+});
+
+export const { increment, decrement } = counterSlice.actions;
+
+export default counterSlice.reducer;
+```
+
+Reducer names are optional; without them you get an empty `reducers: {}` block
+and no actions export.
+
+Running `semantic-react g p about --tsx` creates a Pages Router file:
+
+```
+pages/
+  about.tsx
+```
+
+```tsx
+export default function about() {
+  // ...
+}
+```
+
+Pass `--app` for the App Router convention instead — a route-segment folder
+containing `page.<ext>`:
+
+```
+app/
+  about/
+    page.tsx
+```
+
+```tsx
+export default function Page() {
+  // ...
+}
+```
+
 If a file with the same name already exists with a different extension, it is
-removed so each component, helper, or hook has a single source file.
+removed so each scaffold has a single source file.
 
 ### Deleting scaffolds
 
@@ -151,6 +261,8 @@ semantic-react delete helper formatDate
 - `delete helper` and `delete hook` remove the single source file.
 - Custom output paths from `semantic-react.settings.json` are respected, so
   `delete` looks in the same place `generate` writes.
+- `delete` and `rename` do not yet support `context`, `slice`, or `page`
+  scaffolds; remove or rename those files by hand for now.
 - If the target file does not exist, the command prints a notice and exits
   without error.
 
@@ -276,9 +388,10 @@ hooks (hooks)
 
 ### Custom output paths
 
-By default, scaffolds are written to `components/`, `helpers/`, and `hooks/`
-in your project root. To send them somewhere else, add a
-`semantic-react.settings.json` file to your project root.
+By default, scaffolds are written to `components/`, `helpers/`, `hooks/`,
+`contexts/`, `slices/`, `pages/`, and `app/` (for `--app` pages) in your
+project root. To send them somewhere else, add a `semantic-react.settings.json`
+file to your project root.
 
 Run `init` to drop one in, pre-filled with the default paths:
 
@@ -290,7 +403,11 @@ semantic-react init
 {
   "helpers": "helpers",
   "hooks": "hooks",
-  "components": "components"
+  "components": "components",
+  "contexts": "contexts",
+  "slices": "slices",
+  "pages": "pages",
+  "appPages": "app"
 }
 ```
 
@@ -301,7 +418,11 @@ Then edit the paths to taste, for example:
 {
   "components": "src/components",
   "helpers": "src/lib/helpers",
-  "hooks": "src/hooks"
+  "hooks": "src/hooks",
+  "contexts": "src/contexts",
+  "slices": "src/store/slices",
+  "pages": "src/pages",
+  "appPages": "src/app"
 }
 ```
 
@@ -317,7 +438,9 @@ src/components/
 Notes:
 
 - Every key is optional. Any key you leave out falls back to its default
-  (`components`, `helpers`, `hooks`).
+  (`components`, `helpers`, `hooks`, `contexts`, `slices`, `pages`, `appPages`).
+- `pages` applies to `generate page` without `--app`; `appPages` applies to
+  `generate page --app`.
 - If `semantic-react.settings.json` is missing entirely, the defaults are used,
   so existing projects need no changes.
 - Paths are resolved relative to the directory you run the command from

@@ -1,6 +1,6 @@
 {
   "name": "semantic-react-cli",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A small CLI that scaffolds React components with a colocated CSS file.",
   "keywords": [
     "react",
@@ -20,6 +20,7 @@
   "files": [
     "main.js",
     "component.js",
+    "context.js",
     "delete.js",
     "helper.js",
     "hook.js",
@@ -27,6 +28,8 @@
     "list.js",
     "rename.js",
     "move.js",
+    "slice.js",
+    "page.js",
     "prompt.js",
     "json-reader.js",
     "default.js",
