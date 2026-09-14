@@ -5,6 +5,9 @@ import { Command } from 'commander';
 import { generateComponent } from './component.js';
 import { generateHelper } from './helper.js';
 import { generateHook } from './hook.js';
+import { generateContext } from './context.js';
+import { generateSlice } from './slice.js';
+import { generatePage } from './page.js';
 import { generateSettings } from './init.js';
 import readJsonFile from './json-reader.js';
 import { deleteComponent, deleteHelper, deleteHook } from './delete.js';
@@ -65,6 +68,37 @@ generate
   .option('--tsx', 'Generate a .tsx file instead of .js')
   .option('--ts', 'Generate a .ts file instead of .js')
   .action((name, options) => generateHook(name, options, paths.hooks));
+
+// For Creating a context file with a provider and consumer hook
+generate
+  .command('context <name>')
+  .alias('x')
+  .description('Generate a context file with a provider and a consumer hook')
+  .option('--jsx', 'Generate a .jsx file instead of .js')
+  .option('--tsx', 'Generate a .tsx file instead of .js')
+  .option('--ts', 'Generate a .ts file instead of .js')
+  .action((name, options) => generateContext(name, options, paths.contexts));
+
+// For Creating a slice file with createSlice boilerplate
+generate
+  .command('slice <name> [reducers...]')
+  .alias('s')
+  .description('Generate a slice file with createSlice boilerplate, optionally scaffolding named reducer functions')
+  .option('--jsx', 'Generate a .jsx file instead of .js')
+  .option('--tsx', 'Generate a .tsx file instead of .js')
+  .option('--ts', 'Generate a .ts file instead of .js')
+  .action((name, reducers, options) => generateSlice(name, options, paths.slices, undefined, reducers));
+
+// For Creating a Next.js-style page (Pages Router by default, or App Router with --app)
+generate
+  .command('page <name>')
+  .alias('p')
+  .description('Generate a Next.js page (Pages Router by default, or App Router with --app)')
+  .option('--app', 'Use the App Router convention (<dir>/<name>/page.ext) instead of the Pages Router (<dir>/<name>.ext)')
+  .option('--jsx', 'Generate a .jsx file instead of .js')
+  .option('--tsx', 'Generate a .tsx file instead of .js')
+  .option('--ts', 'Generate a .ts file instead of .js')
+  .action((name, options) => generatePage(name, options, options.app ? paths.appPages : paths.pages));
 
   // For delete
   const deleteCommand = program
